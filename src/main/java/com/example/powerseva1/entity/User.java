@@ -20,7 +20,7 @@ public class User {
     private String email;
     private String password;
     private String role;
-    private String ProfileImage;
+//    private String ProfileImage;
 
     @ManyToOne
     @JoinColumn(name = "area_id")

@@ -2,14 +2,14 @@ package com.example.powerseva1.controller;
 
 import com.example.powerseva1.entity.User;
 import com.example.powerseva1.repository.UserRepository;
+import com.example.powerseva1.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import com.example.powerseva1.security.JwtUtil;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
 import java.util.Map;
 
 @RestController
@@ -18,14 +18,23 @@ import java.util.Map;
 public class AuthController {
 
     private final UserRepository userRepository;
+
+    // REGISTER API
     @PostMapping("/register")
-    public String register(@RequestBody User user) {
+    public Map<String, Object> register(@RequestBody User user) {
+
         userRepository.save(user);
-        return "User Registered Successfully";
+
+        return Map.of(
+                "status", "success",
+                "message", "User registered successfully",
+                "email", user.getEmail()
+        );
     }
 
+    // LOGIN API
     @PostMapping("/login")
-    public Map<String, String> login(@RequestBody User user) {
+    public Map<String, Object> login(@RequestBody User user) {
 
         User dbUser = userRepository.findByEmail(user.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -39,11 +48,19 @@ public class AuthController {
                 dbUser.getRole()
         );
 
-        return Map.of("token", token, "role", dbUser.getRole());
+        return Map.of(
+                "status", "success",
+                "token", token,
+                "role", dbUser.getRole(),
+                "email", dbUser.getEmail()
+        );
     }
+
+    // UPLOAD PROFILE IMAGE API
     @PostMapping("/upload-profile/{userId}")
-    public String uploadProfileImage(@PathVariable Long userId,
-                                     @RequestParam("file") MultipartFile file) throws Exception {
+    public Map<String, Object> uploadProfileImage(
+            @PathVariable Long userId,
+            @RequestParam("file") MultipartFile file) throws Exception {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -57,9 +74,14 @@ public class AuthController {
         Files.createDirectories(path.getParent());
         Files.write(path, file.getBytes());
 
-        user.setProfileImage(fileName);
+        // user.setProfileImage(fileName);
         userRepository.save(user);
 
-        return "Profile image uploaded successfully";
+        return Map.of(
+                "status", "success",
+                "message", "Profile image uploaded successfully",
+                "fileName", fileName,
+                "userId", userId
+        );
     }
 }
