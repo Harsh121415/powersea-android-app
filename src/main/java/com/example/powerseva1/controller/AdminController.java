@@ -6,7 +6,6 @@ import com.example.powerseva1.repository.ComplaintRepository;
 import com.example.powerseva1.repository.TechnicianRepository;
 import com.example.powerseva1.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.User;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;

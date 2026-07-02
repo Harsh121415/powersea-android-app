@@ -4,6 +4,7 @@ import com.example.powerseva1.entity.User;
 import com.example.powerseva1.repository.UserRepository;
 import com.example.powerseva1.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,11 +19,13 @@ import java.util.Map;
 public class AuthController {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     // REGISTER API
     @PostMapping("/register")
     public Map<String, Object> register(@RequestBody User user) {
 
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
 
         return Map.of(
@@ -39,7 +42,7 @@ public class AuthController {
         User dbUser = userRepository.findByEmail(user.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (!dbUser.getPassword().equals(user.getPassword())) {
+        if (!passwordEncoder.matches(user.getPassword(), dbUser.getPassword())) {
             throw new RuntimeException("Invalid password");
         }
 
@@ -74,7 +77,7 @@ public class AuthController {
         Files.createDirectories(path.getParent());
         Files.write(path, file.getBytes());
 
-        // user.setProfileImage(fileName);
+        user.setProfileImage(fileName);
         userRepository.save(user);
 
         return Map.of(

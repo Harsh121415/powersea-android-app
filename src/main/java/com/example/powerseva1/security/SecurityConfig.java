@@ -34,7 +34,6 @@ public class SecurityConfig {
 
                         // ✅ ADMIN APIs
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/complaints/assign/**").permitAll()
 
                         // ✅ TECHNICIAN APIs
                         .requestMatchers("/api/complaints/technician/**").hasRole("TECHNICIAN")

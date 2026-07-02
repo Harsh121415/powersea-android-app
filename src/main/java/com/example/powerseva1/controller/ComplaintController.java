@@ -1,17 +1,12 @@
 package com.example.powerseva1.controller;
 
+import com.example.powerseva1.entity.Complaint;
 import com.example.powerseva1.repository.ComplaintRepository;
-import com.example.powerseva1.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
-
-import com.example.powerseva1.entity.Complaint;
-import com.example.powerseva1.service.ComplaintService;
-import com.example.powerseva1.security.JwtUtil;
 
 @RestController
 @RequestMapping("/api/complaints")
@@ -25,6 +20,7 @@ public class ComplaintController {
     public Complaint createComplaint(@RequestBody Complaint complaint) {
 
         complaint.setStatus("PENDING");
+        complaint.setCreatedAt(LocalDateTime.now());
 
         return complaintRepository.save(complaint);
     }
